@@ -1,0 +1,15 @@
+{
+    "name": "stvnrlnd/press",
+    "description": "An elegant markdown-powered blog for the Laravel framework",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Steven Roland",
+            "email": "steven@mojave.io"
+        }
+    ],
+    "require": {},
+    "require-dev": {
+        "orchestra/testbench": "^5.1"
+    }
+}
