@@ -11,5 +11,15 @@
     "require": {},
     "require-dev": {
         "orchestra/testbench": "^5.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "stvnrlnd\\Press\\": "src/"
+        }
+    },
+    "autoload-dev" : {
+        "psr-4": {
+            "stvnrlnd\\Press\\Tests": "tests/"
+        }
     }
 }
