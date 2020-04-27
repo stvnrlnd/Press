@@ -19,7 +19,7 @@
     },
     "autoload-dev" : {
         "psr-4": {
-            "stvnrlnd\\Press\\Tests": "tests/"
+            "stvnrlnd\\Press\\Tests\\": "tests/"
         }
     }
 }
