@@ -29,4 +29,35 @@ class PressFileParserTest extends TestCase
             $data[2]
         );
     }
+
+    /** @test */
+    public function each_head_field_gets_separated()
+    {
+        $pressFileParser = (new PressFileParser(__DIR__.'/../Files/MarkFile1.md'));
+
+        $data = $pressFileParser->getData();
+
+        $this->assertEquals(
+            'Post Title',
+            $data['title']
+        );
+
+        $this->assertEquals(
+            'Post description.',
+            $data['description']
+        );
+    }
+
+    /** @test */
+    public function the_body_gets_saved_and_trimmed()
+    {
+        $pressFileParser = (new PressFileParser(__DIR__.'/../Files/MarkFile1.md'));
+
+        $data = $pressFileParser->getData();
+
+        $this->assertEquals(
+            "# Heading 1\n\nThis is the post body.",
+            $data['body']
+        );
+    }
 }
