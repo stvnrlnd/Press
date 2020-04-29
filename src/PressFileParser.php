@@ -2,6 +2,8 @@
 
 namespace stvnrlnd\Press;
 
+use Illuminate\Support\Str;
+use stvnrlnd\Press\MarkdownParser;
 use Illuminate\Support\Facades\File;
 
 class PressFileParser
@@ -16,6 +18,7 @@ class PressFileParser
 
         $this->splitFile();
         $this->explodeData();
+        $this->processFields();
     }
 
     public function getData()
@@ -26,8 +29,8 @@ class PressFileParser
     protected function splitFile()
     {
         preg_match(
-            '/^\-{3}(.*?)\-{3}(.*)/s', 
-            File::get($this->filename), 
+            '/^\-{3}(.*?)\-{3}(.*)/s',
+            File::exists($this->filename) ? File::get($this->filename) : $this->filename,
             $this->data
         );
     }
@@ -36,8 +39,8 @@ class PressFileParser
     {
         foreach (explode("\n", trim($this->data[1])) as $fieldString) {
             preg_match(
-                '/(.*):\s?(.*)/', 
-                $fieldString, 
+                '/(.*):\s?(.*)/',
+                $fieldString,
                 $fieldArray
             );
 
@@ -45,5 +48,25 @@ class PressFileParser
         }
 
         $this->data['body'] = trim($this->data[2]);
+    }
+
+    protected function processFields()
+    {
+        foreach ($this->data as $field => $value) {
+
+            $class = 'stvnrlnd\\Press\\Fields\\' . Str::title($field);
+
+            if (class_exists($class) && method_exists($class, 'process')) {
+                $this->data = array_merge(
+                    $this->data,
+                    $class::process($field, $value)
+                );
+            }
+            //     $this->data[$field] = Carbon::parse($value);
+
+            // else if ($field === 'body') {
+            //     $this->data[$field] = MarkdownParser::parse($value);
+            // }
+        }
     }
 }

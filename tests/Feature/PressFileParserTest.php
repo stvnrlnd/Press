@@ -2,6 +2,7 @@
 
 namespace stvnrlnd\Press\Tests;
 
+use Carbon\Carbon;
 use Orchestra\Testbench\TestCase;
 use stvnrlnd\Press\PressFileParser;
 
@@ -21,6 +22,24 @@ class PressFileParserTest extends TestCase
 
         $this->assertStringContainsString(
             'description: Post description.',
+            $data[1]
+        );
+
+        $this->assertStringContainsString(
+            'This is the post body.',
+            $data[2]
+        );
+    }
+
+    /** @test */
+    public function a_string_can_also_be_parsed()
+    {
+        $pressFileParser = (new PressFileParser("---\ntitle: Post Title\n---\nThis is the post body."));
+
+        $data = $pressFileParser->getData();
+
+        $this->assertStringContainsString(
+            'title: Post Title',
             $data[1]
         );
 
@@ -56,8 +75,26 @@ class PressFileParserTest extends TestCase
         $data = $pressFileParser->getData();
 
         $this->assertEquals(
-            "# Heading 1\n\nThis is the post body.",
+            "<h1>Heading 1</h1>\n<p>This is the post body.</p>",
             $data['body']
+        );
+    }
+
+    /** @test */
+    public function a_date_field_gets_parsed()
+    {
+        $pressFileParser = (new PressFileParser("---\ndate: April 29, 2020\n---\n"));
+
+        $data = $pressFileParser->getData();
+
+        $this->assertInstanceOf(
+            Carbon::class,
+            $data['date']
+        );
+
+        $this->assertEquals(
+            '04/29/2020',
+            $data['date']->format('m/d/Y')
         );
     }
 }
