@@ -2,7 +2,6 @@
 
 namespace stvnrlnd\Press\Tests;
 
-use Orchestra\Testbench\TestCase;
 use stvnrlnd\Press\MarkdownParser;
 
 class MarkdownTest extends TestCase
