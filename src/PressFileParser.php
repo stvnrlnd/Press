@@ -10,6 +10,7 @@ class PressFileParser
 {
     protected $filename;
 
+    protected $raw;
     protected $data;
 
     public function __construct($filename)
@@ -19,6 +20,11 @@ class PressFileParser
         $this->splitFile();
         $this->explodeData();
         $this->processFields();
+    }
+
+    public function getRaw()
+    {
+        return $this->raw;
     }
 
     public function getData()
@@ -31,13 +37,13 @@ class PressFileParser
         preg_match(
             '/^\-{3}(.*?)\-{3}(.*)/s',
             File::exists($this->filename) ? File::get($this->filename) : $this->filename,
-            $this->data
+            $this->raw
         );
     }
 
     protected function explodeData()
     {
-        foreach (explode("\n", trim($this->data[1])) as $fieldString) {
+        foreach (explode("\n", trim($this->raw[1])) as $fieldString) {
             preg_match(
                 '/(.*):\s?(.*)/',
                 $fieldString,
@@ -47,26 +53,22 @@ class PressFileParser
             $this->data[$fieldArray[1]] = $fieldArray[2];
         }
 
-        $this->data['body'] = trim($this->data[2]);
+        $this->data['body'] = trim($this->raw[2]);
     }
 
     protected function processFields()
     {
         foreach ($this->data as $field => $value) {
-
             $class = 'stvnrlnd\\Press\\Fields\\' . Str::title($field);
 
-            if (class_exists($class) && method_exists($class, 'process')) {
-                $this->data = array_merge(
-                    $this->data,
-                    $class::process($field, $value)
-                );
+            if (! class_exists($class)) {
+                $class = 'stvnrlnd\\Press\\Fields\\Extra';
             }
-            //     $this->data[$field] = Carbon::parse($value);
 
-            // else if ($field === 'body') {
-            //     $this->data[$field] = MarkdownParser::parse($value);
-            // }
+            $this->data = array_merge(
+                $this->data,
+                $class::process($field, $value, $this->data)
+            );
         }
     }
 }

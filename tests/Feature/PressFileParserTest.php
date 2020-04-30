@@ -13,7 +13,7 @@ class PressFileParserTest extends TestCase
     {
         $pressFileParser = (new PressFileParser(__DIR__.'/../Files/MarkFile1.md'));
 
-        $data = $pressFileParser->getData();
+        $data = $pressFileParser->getRaw();
 
         $this->assertStringContainsString(
             'title: Post Title',
@@ -36,7 +36,7 @@ class PressFileParserTest extends TestCase
     {
         $pressFileParser = (new PressFileParser("---\ntitle: Post Title\n---\nThis is the post body."));
 
-        $data = $pressFileParser->getData();
+        $data = $pressFileParser->getRaw();
 
         $this->assertStringContainsString(
             'title: Post Title',
@@ -95,6 +95,35 @@ class PressFileParserTest extends TestCase
         $this->assertEquals(
             '04/29/2020',
             $data['date']->format('m/d/Y')
+        );
+    }
+
+    /** @test */
+    public function an_extra_field_gets_saved()
+    {
+        $pressFileParser = (new PressFileParser("---\nauthor: John Doe\n---\n"));
+
+        $data = $pressFileParser->getData();
+
+        $this->assertEquals(
+            json_encode(['author' => 'John Doe']),
+            $data['extra']
+        );
+    }
+
+    /** @test */
+    public function multiple_extra_fields_are_saved()
+    {
+        $pressFileParser = (new PressFileParser("---\nauthor: John Doe\nimage:some/image.jpg\n---\n"));
+
+        $data = $pressFileParser->getData();
+
+        $this->assertEquals(
+            json_encode([
+                'author' => 'John Doe',
+                'image' => 'some/image.jpg'
+            ]),
+            $data['extra']
         );
     }
 }
