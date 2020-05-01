@@ -23,5 +23,12 @@
         "psr-4": {
             "stvnrlnd\\Press\\Tests\\": "tests/"
         }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "stvnrlnd\\Press\\PressBaseServiceProvider"
+            ]
+        }
     }
 }
